@@ -1,0 +1,13 @@
+/*
+ * H7SEG_configuration.h
+ *
+ *  Created on: Jan 17, 2022
+ *      Author: yasse
+ */
+
+#ifndef INCLUDE_3_HAL_1_H7SEGMENT_H7SEG_CONFIGURATION_H_
+#define INCLUDE_3_HAL_1_H7SEGMENT_H7SEG_CONFIGURATION_H_
+
+#define H7SEGMENT_PORT	DIO_U8_PORTB
+
+#endif /* INCLUDE_3_HAL_1_H7SEGMENT_H7SEG_CONFIGURATION_H_ */
