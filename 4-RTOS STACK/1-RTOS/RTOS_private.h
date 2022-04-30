@@ -8,4 +8,12 @@
  ****************************************************************************************************************/
 #ifndef _RTOS_PRIVATE_H_
 #define _RTOS_PRIVATE_H_
+
+typedef struct
+{
+    u16 Periodicity;
+    void (*Taskfunc)(void);
+} Task_t;
+
+static void voidScheduler(void);
 #endif
