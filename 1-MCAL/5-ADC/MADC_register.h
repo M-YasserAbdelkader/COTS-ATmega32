@@ -1,12 +1,13 @@
-/*
- * Author: Yasser Mustafa
- * Layer: MCAL
- * Component: ADC
- * Version: 1.00
- * Date: JAN 22th 2022
- */
-#ifndef INCLUDE_1_MCAL_5_ADC_MADC_REGISTER_H_
-#define INCLUDE_1_MCAL_5_ADC_MADC_REGISTER_H_
+/**********************************************************
+ * @file        MADC_register.h
+ * @author      Yasser M. AbdelKader (m.abdelkader.yasser@gmail.com)
+ * @brief       ADC Driver - MCAL 
+ * @version     0.1
+ * @date        2022-04-22
+ * @copyright   Copyright (c) 2022
+ **********************************************************/
+#ifndef MADC_REGISTER_H_
+#define MADC_REGISTER_H_
 
 #define ADC_U8_ADMUX_REGISTER			*((volatile u8 *)	0x27)
 
@@ -76,6 +77,10 @@
 #define ADC_U8_ADCH_REGISTER			*((volatile u8 *)	0x25)
 
 #define ADC_U8_ADCL_REGISTER			*((volatile u8 *)	0x24)
+#define ADC_U16_ADCL_REGISTER			*((volatile u16 *)	0x24)
+
+#define ADC_PRESCALAR_MUSK  0b11111000
+#define ADC_CHANNEL_REGISTER_MUSK 0b11100000
 
 
 #endif /* INCLUDE_1_MCAL_5_ADC_MADC_REGISTER_H_ */

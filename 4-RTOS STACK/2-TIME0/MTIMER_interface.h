@@ -1,13 +1,21 @@
-/**********************************************************
+/******************************************************************************
  * @file 		MTIMER_interface.h
- * @author 		Yasser Mustafa
- * @brief 		TIMER Driver - MCAL
+ * @author 		Yasser M. Abdelkader (m.abdelkader.yasser@gmail.com)
+ * @brief 		TIMER Driver - RTOS stack
  * @version 	0.1
- * @date 		2022-04-19
+ * @date 		2022-04-30
  * @copyright 	Copyright (c) 2022
- **********************************************************/
+ ******************************************************************************/
 #ifndef MTIMER_INTERFACE_H_
 #define MTIMER_INTERFACE_H_
+
+/******************************************************************************
+ *  \fn     void TIMER0_u8SetCallBack(void (*Copy_pvCallBackFunck)(void)); 
+ *  \brief  Sets callback routine on timer interrupt event
+ *  \param  Copy_pvCallBackFunck a pointer to a function that runs upon interrupt event
+ *  \return \c void
+******************************************************************************/
+void TIMER0_u8SetCallBack(void (*Copy_pvCallBackFunck)(void));
 
 /**********************************************************
  *  \fn     void MTIMER0_voidInit(void); 
@@ -17,21 +25,13 @@
 **********************************************************/
 void MTIMER0_voidInit(void);
 
-/**********************************************************
- *  \fn     MTIMER0_voidSetCompareMatchValue(u8 copy_u8Value); 
- *  \brief  Set Compare Match Value 
- *  \param  copy_u8Value  u8 Compare match value
- *  \return None
-**********************************************************/
-void MTIMER0_voidSetCompareMatchValue(u8 copy_u8Value);
 
-void TIMER0_u8SetCallBack(void (*Copy_pvCallBackFunck)(void));
 
 /** \brief Timer waveform Generation Mode */
-#define TIMER0_NORMAL_MODE                      0
-#define TIMER0_PWM_MODE                         1
-#define TIMER0_CTC_MODE                         2
-#define TIMER0_FAST_PWM_MODE                    3
+#define TIMER0_NORMAL_MODE                      1
+#define TIMER0_PWM_MODE                         2
+#define TIMER0_CTC_MODE                         3
+#define TIMER0_FAST_PWM_MODE                    4
 /**********************************************************/
 
 /** \brief Compare Output Mode, non-PMW Mode */

@@ -3,9 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "E:\\COTS\\2-LIB",
-                "${workspaceFolder}/1-MCAL/1-DIO",
-                "0-LIB"
+                "${workspaceFolder}/**"
             ],
             "defines": [
                 "_DEBUG",
