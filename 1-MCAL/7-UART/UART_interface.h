@@ -18,16 +18,16 @@
 void MUSART_voidInit(void);
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
-u8 MUSART_u8SendCharSynch(u16* copy_pu8Data);
-u8 MUSART_u8SendCharAsynch(u16 copy_u16Data, void(* copy_pvNotificationFunc)(void));
-u8 MUSART_u8SendStringAsynch(u8* copy_pu8String, void(* copy_pvNotificationFunc)(void));
-u8 MUSART_u8SendStringSynch(u8* copy_pu8String);
+u8 MUSART_u8SendCharSynch(u16 *copy_pu8Data);
+u8 MUSART_u8SendCharAsynch(u16 copy_u16Data, void (*copy_pvNotificationFunc)(void));
+u8 MUSART_u8SendStringAsynch(u8 *copy_pu8String, void (*copy_pvNotificationFunc)(void));
+u8 MUSART_u8SendStringSynch(u8 *copy_pu8String);
 
-u8 MUSART_u8ReceiveCharSynch(u16* copy_pu8Data);
-u8 MUSART_u8ReceiveCharAsynch(u16* copy_pu16Data, void(* copy_pvNotificationFunc)(void));
+u8 MUSART_u8ReceiveCharSynch(u16 *copy_pu8Data);
+u8 MUSART_u8ReceiveCharAsynch(u16 *copy_pu16Data, void (*copy_pvNotificationFunc)(void));
 u8 MUSART_u8Recieve(void);
 
 #endif

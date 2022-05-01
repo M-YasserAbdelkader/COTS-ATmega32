@@ -15,9 +15,8 @@
 #include "MADC_configuration.h"
 #include "MADC_private.h"
 
-static u16* ADC_pu16Reading = NULL; 
+static u16 *ADC_pu16Reading = NULL;
 static void (*ADC_pvCallBackNotificationFunc)(void) = NULL;
-
 
 void MADC_voidADCInit(void)
 {
@@ -54,8 +53,7 @@ void MADC_voidADCInit(void)
 #error "Wrong Adjust Result Selection"
 #endif
 
-
-	/*  Disable Auto Triggering (Not Configurable for now ) */ 
+	/*  Disable Auto Triggering (Not Configurable for now ) */
 	CLR_BIT(ADC_U8_ADCSRA_REGISTER, ADC_ADCSRA_ADATE);
 
 	/* Set Prescaler */
@@ -64,11 +62,9 @@ void MADC_voidADCInit(void)
 
 	/* Enable Prescaler */
 	SET_BIT(ADC_U8_ADCSRA_REGISTER, ADC_ADCSRA_ADEN);
-
 }
 
-
-u8 MADC_u8StartConversionSynch(u8 copy_u8Channel, u16* copy_pu16Reading)
+u8 MADC_u8StartConversionSynch(u8 copy_u8Channel, u16 *copy_pu16Reading)
 {
 
 	u8 local_u8ErrorState = OK;
@@ -83,7 +79,7 @@ u8 MADC_u8StartConversionSynch(u8 copy_u8Channel, u16* copy_pu16Reading)
 		if (copy_pu16Reading == NULL)
 		{
 			/* Return Error Status: Null Pointer */
-			local_u8ErrorState = NULL_POINTER; 
+			local_u8ErrorState = NULL_POINTER;
 		}
 		else if (copy_u8Channel < ADC0_SINGLE_ENDED_INPUT || copy_u8Channel > ADC7_SINGLE_ENDED_INPUT)
 		{
@@ -94,11 +90,11 @@ u8 MADC_u8StartConversionSynch(u8 copy_u8Channel, u16* copy_pu16Reading)
 		{
 			/* Set ADC Channel */
 			ADC_U8_ADMUX_REGISTER &= ADC_CHANNEL_REGISTER_MUSK;
-			ADC_U8_ADMUX_REGISTER |=copy_u8Channel;
-		
+			ADC_U8_ADMUX_REGISTER |= copy_u8Channel;
+
 			/* Start Conversiotn */
 			SET_BIT(ADC_U8_ADCSRA_REGISTER, ADC_ADCSRA_ADSC);
-		
+
 			/* Polling Till converstion is complete or Timeout occurs */
 			while ((GET_BIT(ADC_U8_ADCSRA_REGISTER, ADC_ADCSRA_ADSC) != 0) && (local_u32Counter != 0))
 			{
@@ -114,24 +110,26 @@ u8 MADC_u8StartConversionSynch(u8 copy_u8Channel, u16* copy_pu16Reading)
 				/* Clear ADC conversion Complete Interrupt Flag */
 				SET_BIT(ADC_U8_ADCSRA_REGISTER, ADC_ADCSRA_ADIF);
 
-			#if ADC_RESULT_ADJUST == ADC_LEFT_ADJUST
+#if ADC_RESULT_ADJUST == ADC_LEFT_ADJUST
+
 				/* Get 8-bit High ADC register reading */
 				*copy_pu16Reading = 0;
-				*copy_pu16Reading = (u16)ADC_U8_ADCH_REGISTER;	
-			#elif ADC_RESULT_ADJUST == ADC_RIGHT_ADJUST
+				*copy_pu16Reading = (u16)ADC_U8_ADCH_REGISTER;
+
+#elif ADC_RESULT_ADJUST == ADC_RIGHT_ADJUST
+
 				/* Get 16-bit ADC registers (LOW + High) reading */
 				*copy_pu16Reading = ADC_U16_ADCL_REGISTER;
-			#else
-			#error "Wrong Adjust Result Select"
-			#endif	
+#else
+#error "Wrong Adjust Result Select"
+#endif
+			}
 		}
 	}
-	
-	}
-return local_u8ErrorState;
+	return local_u8ErrorState;
 }
 
-u8 MADC_u8StartConversionAsynch(u8 copy_u8Channel, u16* copy_pu16Reading, void (*copy_pvNotificationFunc)(void))
+u8 MADC_u8StartConversionAsynch(u8 copy_u8Channel, u16 *copy_pu16Reading, void (*copy_pvNotificationFunc)(void))
 {
 	u8 local_u8ErrorStatus = OK;
 
@@ -154,38 +152,37 @@ u8 MADC_u8StartConversionAsynch(u8 copy_u8Channel, u16* copy_pu16Reading, void (
 
 			/* Initialize callbck notification function globally*/
 			ADC_pvCallBackNotificationFunc = copy_pvNotificationFunc;
-		
+
 			/* Set ADC Channel */
 			ADC_U8_ADMUX_REGISTER &= ADC_CHANNEL_REGISTER_MUSK;
-			ADC_U8_ADMUX_REGISTER |=copy_u8Channel;
+			ADC_U8_ADMUX_REGISTER |= copy_u8Channel;
 
 			/* Enable ADC Conversion compelete interrupt */
 			SET_BIT(ADC_U8_ADCSRA_REGISTER, ADC_ADCSRA_ADIE);
-		
+
 			/* Start Conversiotn */
 			SET_BIT(ADC_U8_ADCSRA_REGISTER, ADC_ADCSRA_ADSC);
 		}
 	}
 
 	return local_u8ErrorStatus;
-	
 }
 
-void __vector_16(void)	 __attribute__((signal));
+void __vector_16(void) __attribute__((signal));
 void __vector_16(void)
 {
-	/* Read ADC Result */
-	#if ADC_RESULT_ADJUST == ADC_LEFT_ADJUST
-		/* Get 8-bit High ADC register reading */
-		*ADC_pu16Reading = 0;
-		*ADC_pu16Reading = (u16)ADC_U8_ADCH_REGISTER;	
-	#elif ADC_RESULT_ADJUST == ADC_RIGHT_ADJUST
+/* Read ADC Result */
+#if ADC_RESULT_ADJUST == ADC_LEFT_ADJUST
+	/* Get 8-bit High ADC register reading */
+	*ADC_pu16Reading = 0;
+	*ADC_pu16Reading = (u16)ADC_U8_ADCH_REGISTER;
+#elif ADC_RESULT_ADJUST == ADC_RIGHT_ADJUST
 
-		/* Get 16-bit ADC registers (LOW + High) reading */
-		*ADC_pu16Reading = ADC_U16_ADCL_REGISTER;
-	#else
-	#error "Wrong Adjust Result Select"
-	#endif
+	/* Get 16-bit ADC registers (LOW + High) reading */
+	*ADC_pu16Reading = ADC_U16_ADCL_REGISTER;
+#else
+#error "Wrong Adjust Result Select"
+#endif
 
 	/*Invoke callback notification function */
 	ADC_pvCallBackNotificationFunc();

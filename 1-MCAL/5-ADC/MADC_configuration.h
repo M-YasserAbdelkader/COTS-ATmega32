@@ -18,29 +18,29 @@
  * \arg \c  ADC_INTERNAL_2_56V  Internal 2.56V voltage reference
  *                              with external capacitor at AREF
  **********************************************************************/
-#define ADC_REFERENCE_VOLTAGE       ADC_AREF
+#define ADC_REFERENCE_VOLTAGE ADC_AREF
 
 /**********************************************************************
  * \def     ADC_RESULT_ADJUST
  * \brief   Adjust result
- * 
- * \details if no more than 8-bit precision is requered, select ADC_LEFT_ADJUST. 
+ *
+ * \details if no more than 8-bit precision is requered, select ADC_LEFT_ADJUST.
  *          if all 10-bit precision is requered, select ADC_RIGHT_ADJUST.
  * \details The following options are availble:
- * 
+ *
  * \arg \c  ADC_LEFT_ADJUST   Left Adjust Result
  * \arg \c  ADC_RIGHT_ADJUST  Right Adjust Result
  **********************************************************************/
-#define ADC_RESULT_ADJUST           ADC_LEFT_ADJUST
+#define ADC_RESULT_ADJUST ADC_LEFT_ADJUST
 
 /**********************************************************************
  * \def     ADC_PRESCALER
  * \brief   ADC Prescaler Select
- * 
+ *
  * \details determine the division factor between the XTAL frequency
  *          and the input clock to the ADC
  * \details The following options are availble:
- * 
+ *
  * \arg \c  DIVISION_FACTOR_2       Division Factor: 2
  * \arg \c  DIVISION_FACTOR_4       Division Factor: 4
  * \arg \c  DIVISION_FACTOR_8       Division Factor: 8
@@ -49,9 +49,8 @@
  * \arg \c  DIVISION_FACTOR_64      Division Factor: 64
  * \arg \c  DIVISION_FACTOR_128     Division Factor: 128
  **********************************************************************/
-#define ADC_PRESCALER               DIVISION_FACTOR_64
+#define ADC_PRESCALER DIVISION_FACTOR_64
 
-
-#define ADC_U32_TIMEOUT         5000000
+#define ADC_U32_TIMEOUT 5000000
 
 #endif /* MADC_CONFIGURATION_H_ */

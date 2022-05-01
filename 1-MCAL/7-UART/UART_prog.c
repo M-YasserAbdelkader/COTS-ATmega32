@@ -7,15 +7,15 @@
  * @copyright   Copyright (c) 2022
  ************************************************************************/
 
-#include"STD_TYPES.h"
+#include "STD_TYPES.h"
 #include "BIT_MATH.h"
 
-#include"UART_interface.h"
-#include"UART_private.h"
-#include"UART_register.h"
-#include"UART_config.h"
+#include "UART_interface.h"
+#include "UART_private.h"
+#include "UART_register.h"
+#include "UART_config.h"
 
-static u16* USART_pu16Reading = NULL; 
+static u16 *USART_pu16Reading = NULL;
 static void (*USART_pvCallBackNotificationFunc)(void) = NULL;
 
 void MUSART_voidInit(void)
@@ -30,7 +30,7 @@ void MUSART_voidInit(void)
 #if USART_MODE_SELECT == USART_ASYNCH_MODE
 
     CLR_BIT(local_u8UCSRCRegisterValue, UART_UCSRC_UMSEL);
-    
+
 #elif USART_MODE_SELECT == USART_SYNCH_MODE
 
     SET_BIT(local_u8UCSRCRegisterValue, UART_UCSRC_UMSEL);
@@ -43,7 +43,7 @@ void MUSART_voidInit(void)
 #if USARt_PARITY_MODE == USART_EVEN_PARITY
 
     SET_BIT(local_u8UCSRCRegisterValue, UART_UCSRC_UPM1);
-    CLR_BIT(local_u8UCSRCRegisterValue, UART_UCSRC_UPM0); 
+    CLR_BIT(local_u8UCSRCRegisterValue, UART_UCSRC_UPM0);
 
 #elif USARt_PARITY_MODE == USART_ODD_PARITY
 
@@ -59,21 +59,20 @@ void MUSART_voidInit(void)
 #endif
 
     /* Choose Number of Stop bit(s) */
-#if     USART_STOP_BIT_SELECT == USART_1_BIT_STOP
+#if USART_STOP_BIT_SELECT == USART_1_BIT_STOP
     CLR_BIT(local_u8UCSRCRegisterValue, UART_UCSRC_USBS);
-#elif   USART_STOP_BIT_SELECT == USART_2_BIT_STOP
+#elif USART_STOP_BIT_SELECT == USART_2_BIT_STOP
     SET_BIT(local_u8UCSRCRegisterValue, UART_UCSRC_USBS);
 #else
 #error "Wron  Stop Bit(s) Selection"
 #endif
-    
 
-    /* Choose Character Size (8-bit) */ 
+    /* Choose Character Size (8-bit) */
 #if (USART_CHAR_SIZE >= USART_5_BIT_SIZE) && (USART_CHAR_SIZE <= USART_8_BIT_SIZE)
 
     CLR_BIT(UART_UCSRB_REGISTER, UART_UCSRB_UCSZ2);
     local_u8UCSRCRegisterValue &= UART_UCSRC_MUSK;
-    local_u8UCSRCRegisterValue |= (USART_CHAR_SIZE << 1); 
+    local_u8UCSRCRegisterValue |= (USART_CHAR_SIZE << 1);
 
 #elif USART_CHAR_SIZE == USART_9_BIT_SIZE
 
@@ -86,19 +85,19 @@ void MUSART_voidInit(void)
 
     /* Update UCSRC Register */
     UART_UCSRC_REGISTER = local_u8UCSRCRegisterValue;
-    
+
     /*choose Baud Rate (9600 bps) f = 8 MHZ */
     UART_UBRRL_REGISTER = (u8)local_u8UbrrValue;
     local_u8UCSRCRegisterValue >>= 8;
     CLR_BIT(local_u8UCSRCRegisterValue, 7);
-    UART_UBRRH_REGISTER = (u8)local_u8UCSRCRegisterValue;  
+    UART_UBRRH_REGISTER = (u8)local_u8UCSRCRegisterValue;
 
     /* Enable/Disable Receiver */
-#if     USART_TRANSMIT_ENABLE == ENABLE
+#if USART_TRANSMIT_ENABLE == ENABLE
 
     SET_BIT(UART_UCSRB_REGISTER, UART_UCSRB_RXEN);
 
-#elif   USART_TRANSMIT_ENABLE == DISABLE
+#elif USART_TRANSMIT_ENABLE == DISABLE
 
     CLR_BIT(UART_UCSRB_REGISTER, UART_UCSRB_RXEN);
 
@@ -107,11 +106,11 @@ void MUSART_voidInit(void)
 #endif
 
     /* Enable/Disable Transmitter */
-#if     USART_TRANSMIT_ENABLE == ENABLE
+#if USART_TRANSMIT_ENABLE == ENABLE
 
     SET_BIT(UART_UCSRB_REGISTER, UART_UCSRB_TXEN);
 
-#elif   USART_TRANSMIT_ENABLE == DISABLE
+#elif USART_TRANSMIT_ENABLE == DISABLE
 
     CLR_BIT(UART_UCSRB_REGISTER, UART_UCSRB_TXEN);
 
@@ -120,7 +119,7 @@ void MUSART_voidInit(void)
 #endif
 }
 
-u8 MUSART_u8SendCharSynch(u16* copy_pu16Data)
+u8 MUSART_u8SendCharSynch(u16 *copy_pu16Data)
 {
     u8 local_u8ErrorState = OK;
     u32 local_u32TimeoutCounter = USART_U32_TIMEOUT;
@@ -150,18 +149,17 @@ u8 MUSART_u8SendCharSynch(u16* copy_pu16Data)
             }
             else
             {
-                SET_BIT(UART_UCSRB_REGISTER, UART_UCSRB_TXB8);    
+                SET_BIT(UART_UCSRB_REGISTER, UART_UCSRB_TXB8);
             }
 #endif
 
-            UART_UDR_REGISTER = (u8)*copy_pu16Data; 
+            UART_UDR_REGISTER = (u8)*copy_pu16Data;
         }
-        
     }
     return local_u8ErrorState;
 }
 
-u8 MUSART_u8ReceiveCharSynch(u16* copy_pu16Data)
+u8 MUSART_u8ReceiveCharSynch(u16 *copy_pu16Data)
 {
     u8 local_u8ErrorState = OK;
     u32 local_u32TimeoutCounter = USART_U32_TIMEOUT;
@@ -171,50 +169,50 @@ u8 MUSART_u8ReceiveCharSynch(u16* copy_pu16Data)
     }
     else
     {
-    /* check input validity*/
-    if (copy_pu16Data == NULL)
-    {
-        local_u8ErrorState = NULL_POINTER;
-    }
-    else
-    {
-        *copy_pu16Data = 0;
-        /* Wait till Receiving is compelete or timeout occurs */
-        while ((GET_BIT(UART_UCSRA_REGISTER, UART_UCSRA_RXC) == 0) && (local_u32TimeoutCounter != 0))
+        /* check input validity*/
+        if (copy_pu16Data == NULL)
         {
-            local_u32TimeoutCounter--;
-        }
-        /* Check if timeout occured */
-        if (local_u32TimeoutCounter == 0)
-        {
-            local_u8ErrorState = TIMEOUT;
+            local_u8ErrorState = NULL_POINTER;
         }
         else
         {
-#if USART_CHAR_SIZE == USART_9_BIT_SIZE
-
-            /* check and update 9th bit*/
-            if (GET_BIT(UART_UCSRB_REGISTER, UART_UCSRB_BXB8) == 0)
+            *copy_pu16Data = 0;
+            /* Wait till Receiving is compelete or timeout occurs */
+            while ((GET_BIT(UART_UCSRA_REGISTER, UART_UCSRA_RXC) == 0) && (local_u32TimeoutCounter != 0))
             {
-                CLR_BIT(*copy_pu16Data, 8);
+                local_u32TimeoutCounter--;
+            }
+            /* Check if timeout occured */
+            if (local_u32TimeoutCounter == 0)
+            {
+                local_u8ErrorState = TIMEOUT;
             }
             else
             {
-                SET_BIT(*copy_pu16Data, 8);    
-            }
+#if USART_CHAR_SIZE == USART_9_BIT_SIZE
+
+                /* check and update 9th bit*/
+                if (GET_BIT(UART_UCSRB_REGISTER, UART_UCSRB_BXB8) == 0)
+                {
+                    CLR_BIT(*copy_pu16Data, 8);
+                }
+                else
+                {
+                    SET_BIT(*copy_pu16Data, 8);
+                }
 #endif
-            /* Read the 8 bit data from data buffer register */
-            *copy_pu16Data &= 0xff00;
-            *copy_pu16Data |= (u8)UART_UDR_REGISTER;
+                /* Read the 8 bit data from data buffer register */
+                *copy_pu16Data &= 0xff00;
+                *copy_pu16Data |= (u8)UART_UDR_REGISTER;
+            }
         }
     }
-    }
-    
+
     /* Return Error State*/
-    return local_u8ErrorState;   
+    return local_u8ErrorState;
 }
 
-u8 MUSART_u8SendCharAsynch(u16 copy_u16Data, void(* copy_pvNotificationFunc)(void))
+u8 MUSART_u8SendCharAsynch(u16 copy_u16Data, void (*copy_pvNotificationFunc)(void))
 {
     u8 local_u8ErrorState = OK;
 
@@ -243,30 +241,27 @@ u8 MUSART_u8SendCharAsynch(u16 copy_u16Data, void(* copy_pvNotificationFunc)(voi
             }
             else
             {
-                SET_BIT(UART_UCSRB_REGISTER, UART_UCSRB_TXB8);    
+                SET_BIT(UART_UCSRB_REGISTER, UART_UCSRB_TXB8);
             }
 #endif
 
-            UART_UDR_REGISTER = (u8)copy_u16Data; 
-
+            UART_UDR_REGISTER = (u8)copy_u16Data;
         }
-        
     }
 
     return local_u8ErrorState;
-    
 }
-void __vector_14(void)	 __attribute__((signal));
+void __vector_14(void) __attribute__((signal));
 void __vector_14(void)
 {
     /* Disable Data Register Empty Interrupt */
     CLR_BIT(UART_UCSRB_REGISTER, UART_UCSRB_UDRIE);
 
     /*Invoke callback notification function */
-	USART_pvCallBackNotificationFunc();
+    USART_pvCallBackNotificationFunc();
 }
 
-u8 MUSART_u8ReceiveCharAsynch(u16* copy_pu16Data, void(* copy_pvNotificationFunc)(void))
+u8 MUSART_u8ReceiveCharAsynch(u16 *copy_pu16Data, void (*copy_pvNotificationFunc)(void))
 {
     u8 local_u8ErrorState = OK;
 
@@ -292,31 +287,30 @@ u8 MUSART_u8ReceiveCharAsynch(u16* copy_pu16Data, void(* copy_pvNotificationFunc
                 /* Receive Complete Interrupt */
                 SET_BIT(UART_UCSRB_REGISTER, UART_UCSRB_RXCIE);
             }
-        
-        }  
+        }
     }
     return local_u8ErrorState;
 }
 
-void __vector_13(void)	 __attribute__((signal));
+void __vector_13(void) __attribute__((signal));
 void __vector_13(void)
 {
     /* Disable Data Register Empty Interrupt */
     CLR_BIT(UART_UCSRB_REGISTER, UART_UCSRB_RXCIE);
 #if USART_CHAR_SIZE == USART_9_BIT_SIZE
 
-            /* check and update 9th bit*/
-            if (GET_BIT(UART_UCSRB_REGISTER, UART_UCSRB_BXB8) == 0)
-            {
-                CLR_BIT(*copy_pu16Data, 8);
-            }
-            else
-            {
-                SET_BIT(*USART_pu16Reading, 8);    
-            }
+    /* check and update 9th bit*/
+    if (GET_BIT(UART_UCSRB_REGISTER, UART_UCSRB_BXB8) == 0)
+    {
+        CLR_BIT(*copy_pu16Data, 8);
+    }
+    else
+    {
+        SET_BIT(*USART_pu16Reading, 8);
+    }
 #endif
-            /* Read the 8 bit data from data buffer register */
-            *USART_pu16Reading &= 0xff00;
-            *USART_pu16Reading |= (u8)UART_UDR_REGISTER;
-            USART_pvCallBackNotificationFunc();
+    /* Read the 8 bit data from data buffer register */
+    *USART_pu16Reading &= 0xff00;
+    *USART_pu16Reading |= (u8)UART_UDR_REGISTER;
+    USART_pvCallBackNotificationFunc();
 }
