@@ -28,40 +28,77 @@ void RTOS_voidStart(void)
     MTIMER0_voidInit();
 }
 
-void RTOS_voidCreateTask(u8 copy_u8Priority, u16 copy_u16Periodicity, void (*copy_pvTaskFunc)(void))
+u8 RTOS_u8CreateTask(u8 copy_u8Priority, u16 copy_u16Periodicity, void (*copy_pvTaskFunc)(void), u16 copy_u16FirstDelay)
 {
-    /* Set Task's Periodicity */
-    System_Tasks[copy_u8Priority].Periodicity = copy_u16Periodicity;
+    u8 local_u8ErrorState = OK;
 
-    /* Set Task's Notification function */
-    System_Tasks[copy_u8Priority].Taskfunc = copy_pvTaskFunc;
+    /* Check if the requered priority is empty or used by another task */
+    if (System_Tasks[copy_u8Priority].Taskfunc != NULL)
+    {
+        /* Priority is Reserved. Do not Create Task */
+        local_u8ErrorState = NOK;
+    }
+    else
+    {
+        /* Set Task's Periodicity */
+        System_Tasks[copy_u8Priority].Periodicity = copy_u16Periodicity;
+
+        /* Set Task's Notification function */
+        System_Tasks[copy_u8Priority].Taskfunc = copy_pvTaskFunc;
+
+        /* Initialize task state */
+        System_Tasks[copy_u8Priority].State = TASK_RESUMED;
+
+        /* Impelemt first delay for each task*/
+        System_Tasks[copy_u8Priority].FirstDelay = copy_u16FirstDelay;
+    }
+    return local_u8ErrorState;
 }
 static void voidScheduler(void)
 {
-    static u16 local_u16TickCounter = 0;
     u8 local_u8TaskCounter;
-    local_u16TickCounter++;
 
     /* loop on all tasks to check their periodicity*/
     for (local_u8TaskCounter = 0; local_u8TaskCounter < RTOS_TASK_NUMBER; local_u8TaskCounter++)
     {
-        if (((65535 - local_u16TickCounter) / System_Tasks[local_u8TaskCounter].Periodicity) == 0)
+        /* Invoke Task Counter */
+        if (System_Tasks[local_u8TaskCounter].Taskfunc == NULL)
         {
-            local_u16TickCounter = 65535 - local_u16TickCounter;
-            break;
+            continue;
         }
 
-        if ((local_u16TickCounter % System_Tasks[local_u8TaskCounter].Periodicity) == 0)
+        /* Check if task is suspended */
+        if (TASK_SUSPENDED == System_Tasks[local_u8TaskCounter].State)
         {
-            /* Invoke Task Counter */
-            if (System_Tasks[local_u8TaskCounter].Taskfunc == NULL)
-            {
-                /* Do nothing */
-            }
-            else
-            {
-                System_Tasks[local_u8TaskCounter].Taskfunc();
-            }
+            continue;
+        }
+
+        if (System_Tasks[local_u8TaskCounter].FirstDelay != TASK_TIME)
+        {
+            /* Decrement First Delay */
+            System_Tasks[local_u8TaskCounter].FirstDelay--;
+        }
+        else
+        {
+            System_Tasks[local_u8TaskCounter].Taskfunc();
+            System_Tasks[local_u8TaskCounter].FirstDelay = System_Tasks[local_u8TaskCounter].Periodicity - 1;
         }
     }
+}
+
+void RTOS_voidSuspendTask(u8 copy_u8Priority)
+{
+    /* Update Task's State */
+    System_Tasks[copy_u8Priority].State = TASK_SUSPENDED;
+}
+
+void RTOS_voidResumeTask(u8 copy_u8Priority)
+{
+    /* Update Task's State */
+    System_Tasks[copy_u8Priority].State = TASK_RESUMED;
+}
+
+void RTOS_voidDeleteTask(u8 copy_u8Priority)
+{
+    System_Tasks[copy_u8Priority].Taskfunc = NULL;
 }
