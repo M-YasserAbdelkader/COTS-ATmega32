@@ -14,7 +14,7 @@
 #include "HLCD_private.h"
 #include "HLCD_register.h"
 #include "HLCD_configuration.h"
-//#include <util/delay.h>
+#include <util/delay.h>
 void HLCD_voidInit(void)
 {
 	/** \brief initialize ports and pins */
@@ -55,8 +55,8 @@ void HLCD_voidSendDATA(u8 copy_u8Data)
 
 	/*Send Enable pulse*/
 	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_E_PIN, E_PIN_HIGH);
-	_delay_ms(2);
 	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_E_PIN, E_PIN_LOW);
+	while(HLCD_u8GetBusyFlag() != 0);
 }
 
 void HLCD_voidSendCommand(u8 copy_u8Command)
@@ -72,8 +72,9 @@ void HLCD_voidSendCommand(u8 copy_u8Command)
 
 	/*Send Enable pulse*/
 	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_E_PIN, E_PIN_HIGH);
-	_delay_ms(2);
 	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_E_PIN, E_PIN_LOW);
+	while(HLCD_u8GetBusyFlag() != 0);
+
 }
 
 void HLCD_voidSendString(const u8 *copy_pcString)
@@ -129,7 +130,7 @@ void HLCD_voidWriteNumber(u32 copy_u32Number)
 
 u8 HLCD_u8GetBusyFlag(void)
 {
-	u8 local_u8FlagReading = 0;
+	u8 local_u8FlagReading = 1;
 
 	/* clear RS pin for command */
 	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_RS_PIN, RS_PIN_INSTRUCTION_CODE);
@@ -142,14 +143,14 @@ u8 HLCD_u8GetBusyFlag(void)
 
 	/* Send Enable Pulse */
 	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_E_PIN, E_PIN_HIGH);
-	_delay_ms(1);
-
 	/* Read Busy Flag */
 	local_u8FlagReading = MDIO_u8GetPinValue(HLCD_DATA_PORT, DIO_U8_PIN7);
 	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_E_PIN, E_PIN_LOW);
 
 	/* Make LCD Data Port as output once again */
 	MDIO_voidSetPortDirection(HLCD_DATA_PORT, HLCD_PORT_OUTPUT);
+
+	return local_u8FlagReading;
 }
 
 u8 HLCD_u8GetAddress(void)
@@ -167,8 +168,6 @@ u8 HLCD_u8GetAddress(void)
 
 	/* Send Enable Pulse */
 	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_E_PIN, E_PIN_HIGH);
-	_delay_ms(1);
-
 	/* Read Address Counter */
 	local_u8Address = MDIO_u8GetPortValue(HLCD_DATA_PORT) & 0x7f;
 	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_E_PIN, E_PIN_LOW);
@@ -177,4 +176,31 @@ u8 HLCD_u8GetAddress(void)
 	MDIO_voidSetPortDirection(HLCD_DATA_PORT, HLCD_PORT_OUTPUT);
 
 	return local_u8Address;
+}
+
+
+u8 HLCD_u8ReadCharacter(void)
+{
+	u8 local_u8ACharacter = 0;
+
+	/* Set RS pin for Data */
+	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_RS_PIN, RS_PIN_DISPLAY_DATA);
+
+	/* Set RW pin for Read */
+	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_RW_PIN, 1);
+
+	/* Make LCD Data Port as input to Address Counter */
+	MDIO_voidSetPortDirection(HLCD_DATA_PORT, 0x00);
+
+	/* Send Enable Pulse */
+	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_E_PIN, E_PIN_HIGH);
+
+	/* Read Address Counter */
+	local_u8ACharacter = MDIO_u8GetPortValue(HLCD_DATA_PORT);
+	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_E_PIN, E_PIN_LOW);
+
+	/* Make LCD Data Port as output once again */
+	MDIO_voidSetPortDirection(HLCD_DATA_PORT, HLCD_PORT_OUTPUT);
+
+	return local_u8ACharacter;
 }
