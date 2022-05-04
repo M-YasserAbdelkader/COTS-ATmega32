@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "e:/Embedded Systems/AVR/01- Full Embedded Systems Diploma (material)/04- RTOS/Lecture 2 FreeRTOS/FreeRTOS_SourceFiles",
+      "environment": [],
+      "program": "e:/Embedded Systems/AVR/01- Full Embedded Systems Diploma (material)/04- RTOS/Lecture 2 FreeRTOS/FreeRTOS_SourceFiles/build/Debug/outDebug",
+      "internalConsoleOptions": "openOnSessionStart",
+      "MIMode": "gdb",
+      "miDebuggerPath": "D:/Eureka/IMT/02- Toolchains/mingw64/bin/gdb.exe",
+      "console": "integratedTerminal",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}

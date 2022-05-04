@@ -101,4 +101,15 @@ void MDIO_voidSetPortDirection(u8 copy_u8PortID, u8 copy_PortDirection);
 /****************************************************************************************/
 void MDIO_voidSetPortValue(u8 copy_u8PortID, u8 copy_PortValue);
 
+/****************************************************************************************/
+/*	Function: MDIO_u8GetPortValue														*/
+/*	I/P Parameters: Port ID																*/
+/*	Returns: it returns u8 Value of the given PORT										*/
+/****************************************************************************************/
+/*Options																				*/
+/*	copy_u8PortID: DIO_U8_PORTA, DIO_U8_PORTB, DIO_U8_PORTC, DIO_U8_PORTD				*/
+/****************************************************************************************/
+u8 MDIO_u8GetPortValue(u8 copy_u8PortID);
+
+
 #endif /* INCLUDE_MCAL_DIO_INTERFACE_H_ */

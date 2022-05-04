@@ -53,4 +53,9 @@ void HLCD_voidGoToXY(u8 copy_u8XPos, u8 copy_u8YPos);
 void HLCD_voidWriteSpecialCharacter(u8* copy_pu8Pattern, u8 copy_u8PatternNumber, u8 copy_u8XPos, u8 copy_u8YPos);
 
 void HLCD_voidWriteNumber(u32 copy_u32Number);
+
+u8 HLCD_u8GetBusyFlag(void);
+
+u8 HLCD_u8GetAddress(void);
+
 #endif /* HLCD_INTERFACE_H_ */

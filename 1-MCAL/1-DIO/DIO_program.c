@@ -263,7 +263,7 @@ u8 MDIO_u8GetPinValue(u8 copy_u8PortID, u8 copy_u8PinID)
 /****************************************************************************************/
 void MDIO_voidSetPortDirection(u8 copy_u8PortID, u8 copy_PortDirection)
 {
-	if((copy_u8PortID > DIO_U8_PORTD)	||	(copy_u8PortID > DIO_U8_PORTD))
+	if((copy_u8PortID > DIO_U8_PORTD)	||	(copy_u8PortID < DIO_U8_PORTA))
 	{
 
 	}
@@ -305,5 +305,36 @@ void MDIO_voidSetPortValue(u8 copy_u8PortID, u8 copy_PortValue)
 		}
 	}
 }
+
+/****************************************************************************************/
+/*	Function: MDIO_u8GetPortValue														*/
+/*	I/P Parameters: Port ID																*/
+/*	Returns: it returns u8 Value of the given PORT										*/
+/****************************************************************************************/
+/*Options																				*/
+/*	copy_u8PortID: DIO_U8_PORTA, DIO_U8_PORTB, DIO_U8_PORTC, DIO_U8_PORTD				*/
+/****************************************************************************************/
+u8 MDIO_u8GetPortValue(u8 copy_u8PortID)
+{
+	u8 local_u8PortValue = 0;
+	if((copy_u8PortID > DIO_U8_PORTD)	||	(copy_u8PortID < DIO_U8_PORTA))
+	{
+
+	}
+	else
+	{
+		switch(copy_u8PortID)
+		{
+		case DIO_U8_PORTA:	local_u8PortValue = DIO_U8_PINA_REG ; break;
+		case DIO_U8_PORTB:	local_u8PortValue = DIO_U8_PINB_REG; break;
+		case DIO_U8_PORTC:	local_u8PortValue = DIO_U8_PINC_REG; break;
+		case DIO_U8_PORTD:	local_u8PortValue = DIO_U8_PIND_REG; break;
+		}
+	}
+
+	return local_u8PortValue;
+}
+
+
 
 

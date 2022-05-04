@@ -32,13 +32,15 @@ void HLCD_voidInit(void)
 	/** \brief Display ON|OFF */
 	HLCD_voidSendCommand(CONC_BIT(0, 0, 0, 0, 1, DISPLAY_CONTROL, CURSOR_DISPLAY, CURSOR_BLINK));
 
-
 	/** \brief Display Clear */
 	HLCD_voidSendCommand(CLEAR_DISPLAY_COMMAND);
 
+	/* Entry Mode */
+	HLCD_voidSendCommand(0b00000110);
 
+	/* Return Home */
+	HLCD_voidSendCommand(RETURN_HOME);
 }
-
 
 void HLCD_voidSendDATA(u8 copy_u8Data)
 {
@@ -74,42 +76,37 @@ void HLCD_voidSendCommand(u8 copy_u8Command)
 	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_E_PIN, E_PIN_LOW);
 }
 
-
-void HLCD_voidSendString(const u8* copy_pcString)
+void HLCD_voidSendString(const u8 *copy_pcString)
 {
 	u8 Local_u8Counter = 0;
-	while(copy_pcString[Local_u8Counter] != '\0')
+	while (copy_pcString[Local_u8Counter] != '\0')
 	{
 		HLCD_voidSendDATA(copy_pcString[Local_u8Counter]);
-		Local_u8Counter ++;
+		Local_u8Counter++;
 	}
 }
 
-
 void HLCD_voidGoToXY(u8 copy_u8XPos, u8 copy_u8YPos)
 {
-	u8 Local_u8Address = (copy_u8XPos*0x40) + copy_u8YPos;
+	u8 Local_u8Address = (copy_u8XPos * 0x40) + copy_u8YPos;
 
-	HLCD_voidSendCommand(Local_u8Address +127);
-
+	HLCD_voidSendCommand(Local_u8Address + 128);
 }
 
-
-void HLCD_voidWriteSpecialCharacter(u8* copy_pu8Pattern, u8 copy_u8PatternNumber, u8 copy_u8XPos, u8 copy_u8YPos)
+void HLCD_voidWriteSpecialCharacter(u8 *copy_pu8Pattern, u8 copy_u8PatternNumber, u8 copy_u8XPos, u8 copy_u8YPos)
 {
 	u8 Local_u8Iterator;
 	u8 Local_u8CGRAMAddress = copy_u8PatternNumber * NUMBER_OF_CHARACTERS;
 
-
 	/*Send CG RAM ADDRESS command */
-	HLCD_voidSendCommand(Local_u8CGRAMAddress+64);
+	HLCD_voidSendCommand(Local_u8CGRAMAddress + 64);
 
 	/*Write the pattern into CG RAM*/
-	for (Local_u8Iterator = 0; Local_u8Iterator < NUMBER_OF_CHARACTERS; ++Local_u8Iterator) {
-		HLCD_voidSendDATA(copy_pu8Pattern[Local_u8Iterator]	);
+	for (Local_u8Iterator = 0; Local_u8Iterator < NUMBER_OF_CHARACTERS; ++Local_u8Iterator)
+	{
+		HLCD_voidSendDATA(copy_pu8Pattern[Local_u8Iterator]);
 	}
 	HLCD_voidGoToXY(copy_u8XPos, copy_u8YPos);
-
 
 	/*Display the pattern written in the CG RAM*/
 	HLCD_voidSendDATA(copy_u8PatternNumber);
@@ -118,18 +115,66 @@ void HLCD_voidWriteSpecialCharacter(u8* copy_pu8Pattern, u8 copy_u8PatternNumber
 void HLCD_voidWriteNumber(u32 copy_u32Number)
 {
 	u32 local_u32Multiblier = 1;
-	while (copy_u32Number%(local_u32Multiblier*10) != copy_u32Number)
+	while (copy_u32Number % (local_u32Multiblier * 10) != copy_u32Number)
 	{
 		local_u32Multiblier *= 10;
 	}
 	while (local_u32Multiblier != 0)
 	{
-		HLCD_voidSendDATA((u8)(copy_u32Number/local_u32Multiblier)+'0');
-		copy_u32Number %=  local_u32Multiblier;
-		local_u32Multiblier /= 10; 
+		HLCD_voidSendDATA((u8)(copy_u32Number / local_u32Multiblier) + '0');
+		copy_u32Number %= local_u32Multiblier;
+		local_u32Multiblier /= 10;
 	}
-	
 }
 
+u8 HLCD_u8GetBusyFlag(void)
+{
+	u8 local_u8FlagReading = 0;
 
+	/* clear RS pin for command */
+	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_RS_PIN, RS_PIN_INSTRUCTION_CODE);
 
+	/* Set RW pin for Read */
+	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_RW_PIN, 1);
+
+	/* Make LCD Data Port as input to read Busy flag */
+	MDIO_voidSetPortDirection(HLCD_DATA_PORT, 0x00);
+
+	/* Send Enable Pulse */
+	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_E_PIN, E_PIN_HIGH);
+	_delay_ms(1);
+
+	/* Read Busy Flag */
+	local_u8FlagReading = MDIO_u8GetPinValue(HLCD_DATA_PORT, DIO_U8_PIN7);
+	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_E_PIN, E_PIN_LOW);
+
+	/* Make LCD Data Port as output once again */
+	MDIO_voidSetPortDirection(HLCD_DATA_PORT, HLCD_PORT_OUTPUT);
+}
+
+u8 HLCD_u8GetAddress(void)
+{
+	u8 local_u8Address = 0;
+
+	/* clear RS pin for command */
+	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_RS_PIN, RS_PIN_INSTRUCTION_CODE);
+
+	/* Set RW pin for Read */
+	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_RW_PIN, 1);
+
+	/* Make LCD Data Port as input to Address Counter */
+	MDIO_voidSetPortDirection(HLCD_DATA_PORT, 0x00);
+
+	/* Send Enable Pulse */
+	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_E_PIN, E_PIN_HIGH);
+	_delay_ms(1);
+
+	/* Read Address Counter */
+	local_u8Address = MDIO_u8GetPortValue(HLCD_DATA_PORT) & 0x7f;
+	MDIO_voidSetPinValue(HLCD_CNTL_PORT, HLCD_E_PIN, E_PIN_LOW);
+
+	/* Make LCD Data Port as output once again */
+	MDIO_voidSetPortDirection(HLCD_DATA_PORT, HLCD_PORT_OUTPUT);
+
+	return local_u8Address;
+}
